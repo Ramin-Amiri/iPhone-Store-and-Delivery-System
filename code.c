@@ -54,3 +54,41 @@ int main() {
     showStore(store);
     return 0;
 }
+
+// Function: checkout, delivery, and memory cleanup
+// ------------------------------------------------
+
+void checkout(CartItem cart[], int cartSize) {
+    char name[50];
+    char address[100];
+    float total = 0.0;
+
+    getchar(); // clear input buffer
+
+    printf("\nEnter your name: ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = 0;
+
+    printf("Enter your address: ");
+    fgets(address, sizeof(address), stdin);
+    address[strcspn(address, "\n")] = 0;
+
+    printf("\n----- Final Order Summary -----\n");
+    for (int i = 0; i < cartSize; i++) {
+        printf("Model: %s | Storage: %dGB | Color: %s | Quantity: %d | Price: %.2f\n",
+               cart[i].product->model,
+               cart[i].product->storage,
+               cart[i].color,
+               cart[i].quantity,
+               cart[i].total);
+        total += cart[i].total;
+    }
+
+    printf("Total Amount: %.2f\n", total);
+    printf("\nThank you, %s!\nYour order will be delivered to:\n%s\n", name, address);
+    printf("We appreciate your purchase!\n");
+
+    for (int i = 0; i < cartSize; i++) {
+        free(cart[i].product);
+    }
+}
