@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_COLORS 5
 #define MAX_NAME 50
@@ -48,10 +49,43 @@ void showStore(iPhone store[]) {
     }
 }
 
+//Function to view the current cart items
+void viewCart(CartItem *cart, int cartSize) {
+    printf("\n---- Your Cart ----\n");
+    if (cartSize == 0) {
+        printf("Cart is empty.\n");
+        return;
+    }
+
+    for (int i = 0; i < cartSize; i++) {
+        printf("%d. %s (%dGB) - Color: %s - Quantity: %d - Total: $%.2f\n",
+               i + 1,
+               cart[i].model,
+               cart[i].storage,
+               cart[i].color,
+               cart[i].quantity,
+               cart[i].total);
+    }
+}
+
+
+
 int main() {
     iPhone store[PHONE_COUNT];
     initStore(store);
     showStore(store);
+
+    // Dynamically allocate memory for cart
+    int cartCapacity = 5;
+    int cartSize = 0;
+    CartItem *cart = (CartItem *)malloc(cartCapacity * sizeof(CartItem));
+    
+    viewCart(cart, cartSize);
+    checkout(cart, cartSize);
+
+    free(cart);
+
+    
     return 0;
 }
 
