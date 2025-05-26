@@ -68,20 +68,64 @@ void viewCart(CartItem *cart, int cartSize) {
     }
 }
 
-
+// Main menu function
+void printMenu() {
+    printf("\n===== iPhone Store Menu =====\n");
+    printf("1. View Available iPhones\n");
+    printf("2. Buy an iPhone\n");
+    printf("3. View Cart\n");
+    printf("4. Checkout\n");
+    printf("5. Exit\n");
+    printf("Choose an option: ");
+}
 
 int main() {
     iPhone store[PHONE_COUNT];
     initStore(store);
     showStore(store);
 
-    // Dynamically allocate memory for cart
+// Dynamically allocate memory for cart
     int cartCapacity = 5;
     int cartSize = 0;
     CartItem *cart = (CartItem *)malloc(cartCapacity * sizeof(CartItem));
     
     viewCart(cart, cartSize);
     checkout(cart, cartSize);
+    
+    CartItem* cart = NULL;
+
+    int choice;
+    while (1) {
+        printMenu();
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Try again.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        getchar(); // clear newline
+
+        switch (choice) {
+            case 1:
+                showStore(store);
+                break;
+            case 2:
+                buyiPhone(store);
+                break;
+            case 3:
+                viewCart(cart, cartSize);
+                break;
+            case 4:
+                checkout(cart, cartSize);
+                break;
+            case 5:
+                printf("Thank you! Exiting...\n");
+                free(cart);
+                return 0;
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    }
+    
 
     free(cart);
 
