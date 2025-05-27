@@ -93,7 +93,6 @@ void buyIphone(iPhone *store, CartItem *cart, int *cartSize) {
     char color[20];
     char userColor[20];
 
-    // ✅ Show available iPhones before asking
     printf("---- Available iPhones ----\n");
     showStore(store);
 
@@ -102,55 +101,53 @@ void buyIphone(iPhone *store, CartItem *cart, int *cartSize) {
     while (getchar() != '\n');
 
     if (choice < 1 || choice > PHONE_COUNT) {
-        printf("Invalid choice. Please try again.\n");
+        printf("Invalid choice.\n");
         return;
     }
-
-    printf("Enter the quantity: ");
-    scanf("%d", &quantity);
-    while (getchar() != '\n');
-    if (quantity <= 0) {
-        printf("Invalid quantity. Please try again.\n");
-        return;
+    // Quantity selection
+        printf("\nEnter the quantity: ");
+    while (scanf("%d", &quantity) != 1 || quantity <= 0) {
+        while (getchar() != '\n');
+        printf("Invalid input. Please enter a positive number: ");
     }
-
-    printf("Available colors: ");
-    for (int i = 0; i < store[choice - 1].colorCount; i++) {
-        printf("%s%s", store[choice - 1].colors[i], (i < store[choice - 1].colorCount - 1) ? ", " : "");
-    }
-
-    printf("\nSelect a color: ");
-    scanf("%s", color);
     while (getchar() != '\n');
 
-    strcpy(userColor, color);
-    toLower(userColor);
-
-    int validColor = 0;
-    for (int i = 0; i < store[choice - 1].colorCount; i++) {
-        char storeColor[20];
-        strcpy(storeColor, store[choice - 1].colors[i]);
-        toLower(storeColor);
-
-        if (strcmp(userColor, storeColor) == 0) {
-            validColor = 1;
-            break;
+    // Color selection
+    while (1) {
+        printf("Available colors: ");
+        for (int i = 0; i < store[choice-1].colorCount; i++) {
+            printf("%s%s", store[choice-1].colors[i],
+                 (i < store[choice-1].colorCount-1) ? ", " : "");
         }
+
+        printf("\nSelect a color: ");
+        scanf("%19s", color);
+        while (getchar() != '\n');
+
+        strcpy(userColor, color);
+        toLower(userColor);
+
+        for (int i = 0; i < store[choice-1].colorCount; i++) {
+            char storeColor[20];
+            strcpy(storeColor, store[choice-1].colors[i]);
+            toLower(storeColor);
+
+            if (strcmp(userColor, storeColor) == 0) {
+                // Valid color found - add to cart
+                cart[*cartSize].product = &store[choice-1];
+                strcpy(cart[*cartSize].color, color);
+                cart[*cartSize].quantity = quantity;
+                cart[*cartSize].total = store[choice-1].price * quantity;
+                (*cartSize)++;
+
+                printf("Added to cart: %s (%s) x%d\n",
+                       store[choice-1].model, color, quantity);
+                return;
+            }
+        }
+
+        printf("\nInvalid color. Please try again.\n");
     }
-
-    if (!validColor) {
-        printf("Invalid color selected. Please try again.\n");
-        return;
-    }
-
-    cart[*cartSize].product = &store[choice - 1];
-    strcpy(cart[*cartSize].color, color);
-    cart[*cartSize].quantity = quantity;
-    cart[*cartSize].total = store[choice - 1].price * quantity;
-    (*cartSize)++;
-
-    printf("Added %d x %s (%s) to your cart. Total: $%.2f\n",
-           quantity, store[choice - 1].model, color, cart[*cartSize - 1].total);
 }
 
 // Checkout
@@ -213,18 +210,19 @@ int main() {
                 getchar();
                 break;
             case 2:
-                if (cartSize >= cartCapacity) {
-                    cartCapacity *= 2;
-                    cart = realloc(cart, cartCapacity * sizeof(CartItem));
-                    if (!cart) {
-                        printf("Memory allocation failed!\n");
-                        return 1;
-                    }
-                }
-                // ✅ Do NOT clear screen before showing phones
-                buyIphone(store, cart, &cartSize);
-                printf("\nPress Enter to continue...");
-                getchar();
+    if (cartSize >= cartCapacity) {
+        cartCapacity *= 2;
+        cart = realloc(cart, cartCapacity * sizeof(CartItem));
+        if (!cart) {
+            printf("Memory allocation failed!\n");
+            return 1;
+        }
+    }
+    system("cls");
+    buyIphone(store, cart, &cartSize);
+    printf("\nPress Enter to continue...");
+    getchar();
+    break;
                 break;
             case 3:
                 system("cls");
